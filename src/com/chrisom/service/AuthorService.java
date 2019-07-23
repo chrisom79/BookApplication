@@ -2,6 +2,7 @@ package com.chrisom.service;
 
 import com.chrisom.dto.request.service.CreateAuthorRequest;
 import com.chrisom.dto.response.service.AuthorResponse;
+import rx.Observable;
 import rx.Single;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface AuthorService {
     Single<String> createAuthorV2(CreateAuthorRequest createAuthorRequest);
 
     Single<List<AuthorResponse>> getAllAuthorsV2();
+
+    Observable<List<AuthorResponse>> getAllAuthorsV3();
 }

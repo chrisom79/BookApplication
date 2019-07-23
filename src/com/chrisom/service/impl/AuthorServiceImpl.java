@@ -8,11 +8,13 @@ import com.chrisom.service.AuthorService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rx.Observable;
 import rx.Single;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +52,16 @@ public class AuthorServiceImpl implements AuthorService {
             singleSubscriber.onSuccess(authorResponses);
         });
 
+    }
+
+    public Observable<List<AuthorResponse>> getAllAuthorsV3() {
+        return Observable.create(observer -> {
+            List<AuthorResponse> authorResponses = findAllAuthors().stream().map(
+                    author -> new AuthorResponse(author.getId(), author.getName())).collect(Collectors.toList());
+
+            observer.onNext(authorResponses);
+            observer.onCompleted();
+        });
     }
 
     private String saveAuthor(CreateAuthorRequest createAuthorRequest) {

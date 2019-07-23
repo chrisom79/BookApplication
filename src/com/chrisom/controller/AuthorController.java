@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
@@ -52,5 +53,11 @@ public class AuthorController {
                 .subscribeOn(Schedulers.io())
                 .map(authorResponses -> ResponseEntity.ok(BaseWebResponse.successWithData(authorResponses)));
 
+    }
+
+    @GetMapping(value = "/v3/authors", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Observable<ResponseEntity<BaseWebResponse<List<AuthorResponse>>>> getAllAuthorsV3() {
+        return authorService.getAllAuthorsV3().subscribeOn(Schedulers.io()).map(
+                authorResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(authorResponse)));
     }
 }
