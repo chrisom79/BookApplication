@@ -30,6 +30,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<AuthorResponse> getAllAuthors() {
+
         return findAllAuthors().stream().map(
                 author -> new AuthorResponse(author.getId(), author.getName())).collect(Collectors.toList());
     }
@@ -46,6 +47,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Single<List<AuthorResponse>> getAllAuthorsV2() {
         return Single.create(singleSubscriber -> {
+
             List<AuthorResponse> authorResponses = findAllAuthors().stream().map(
                     author -> new AuthorResponse(author.getId(), author.getName())).collect(Collectors.toList());
 
@@ -56,6 +58,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     public Observable<List<AuthorResponse>> getAllAuthorsV3() {
         return Observable.create(observer -> {
+
             List<AuthorResponse> authorResponses = findAllAuthors().stream().map(
                     author -> new AuthorResponse(author.getId(), author.getName())).collect(Collectors.toList());
 

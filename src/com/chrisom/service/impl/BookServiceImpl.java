@@ -53,8 +53,6 @@ public class BookServiceImpl implements BookService {
     }
 
     private String saveBook(CreateBookRequest createBookRequest) {
-        Optional<Author> optionalAuthor = authorRepository.findById(createBookRequest.getAuthorId());
-
         return bookRepository.save(convertToBook(createBookRequest)).getId();
     }
 

@@ -52,7 +52,7 @@ public class BookController {
             return ResponseEntity.ok(BaseWebResponse.successNoData());
         } else {
             return ResponseEntity.created(URI.create("/api/v1/books/" + bookId))
-                    .body(BaseWebResponse.error(ErrorCode.SERVER_ERROR));
+                    .body(BaseWebResponse.error(ErrorCode.ENTITY_NOT_FOUND));
         }
     }
 

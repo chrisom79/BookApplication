@@ -60,4 +60,5 @@ public class AuthorController {
         return authorService.getAllAuthorsV3().subscribeOn(Schedulers.io()).map(
                 authorResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(authorResponse)));
     }
+
 }
