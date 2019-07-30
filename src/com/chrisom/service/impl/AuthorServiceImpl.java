@@ -12,6 +12,8 @@ import com.chrisom.service.AuthorService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
@@ -61,6 +63,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     }
 
+    @Override
     public Observable<List<AuthorResponse>> getAllAuthorsV3() {
         return Observable.create(observer -> {
 
@@ -71,6 +74,7 @@ public class AuthorServiceImpl implements AuthorService {
             observer.onCompleted();
         });
     }
+
 
     @Override
     public Single<AuthorResponse> getAuthorDetailsV2(String id) {
@@ -84,8 +88,16 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Completable deleteAuthorV2(String id) {
-        return null;
+
+        return deleteAuthorInRepository(id);
     }
+
+    @Override
+    public Flux<AuthorResponse> getAllAuthorsFlux() {
+        return Flux.fromIterable(findAllAuthors().stream().map(
+                author -> new AuthorResponse(author.getId(), author.getName())).collect(Collectors.toList()));
+    }
+
 
     private String saveAuthor(CreateAuthorRequest createAuthorRequest) {
         return authorRepository.save(convertToAuthor(createAuthorRequest)).getId();
@@ -130,6 +142,18 @@ public class AuthorServiceImpl implements AuthorService {
             }
         });
 
+    }
+
+    private Completable deleteAuthorInRepository(String id) {
+        return Completable.create(completableSubscriber -> {
+           Optional<Author> optionalAuthor = authorRepository.findById(id);
+           if(!optionalAuthor.isPresent()) {
+               completableSubscriber.onError(new EntityNotFoundException());
+           } else {
+               authorRepository.delete(optionalAuthor.get());
+               completableSubscriber.onCompleted();
+           }
+        });
     }
 
     private AuthorResponse convertToAuthorResponse(Author author) {

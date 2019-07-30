@@ -8,6 +8,7 @@ import com.chrisom.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
@@ -58,6 +60,18 @@ public class AuthorController {
 
     }
 
+    @GetMapping(value = "/v3/authors", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Observable<ResponseEntity<BaseWebResponse<List<AuthorResponse>>>> getAllAuthorsV3() {
+        return authorService.getAllAuthorsV3().subscribeOn(Schedulers.io()).map(
+                authorResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(authorResponse)));
+    }
+
+
+    @GetMapping(value = "/v1/flux/authors", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<AuthorResponse> getAllAuthorsFlux() {
+        return authorService.getAllAuthorsFlux();
+    }
+
     @GetMapping(value = "/v2/authors/{authorId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Single<ResponseEntity<BaseWebResponse<AuthorResponse>>> getBookDetails(@PathVariable(value = "authorId") String bookId) {
         return authorService.getAuthorDetailsV2(bookId).subscribeOn(Schedulers.io()).map(
@@ -71,10 +85,11 @@ public class AuthorController {
                 .toSingle(() -> ResponseEntity.ok(BaseWebResponse.successNoData()));
     }
 
-    @GetMapping(value = "/v3/authors", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Observable<ResponseEntity<BaseWebResponse<List<AuthorResponse>>>> getAllAuthorsV3() {
-        return authorService.getAllAuthorsV3().subscribeOn(Schedulers.io()).map(
-                authorResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(authorResponse)));
-    }
 
+
+    @DeleteMapping(value = "/v3/authors/{authorId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Single<ResponseEntity<BaseWebResponse>> deleteAuthor(@PathVariable(value = "authorId") String authorId) {
+        return authorService.deleteAuthorV2(authorId).subscribeOn(Schedulers.io())
+                .toSingle(() -> ResponseEntity.ok(BaseWebResponse.successNoData()));
+    }
 }

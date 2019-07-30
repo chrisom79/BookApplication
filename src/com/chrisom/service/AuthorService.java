@@ -3,6 +3,8 @@ package com.chrisom.service;
 import com.chrisom.dto.request.service.CreateAuthorRequest;
 import com.chrisom.dto.request.service.UpdateAuthorRequest;
 import com.chrisom.dto.response.service.AuthorResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
@@ -25,4 +27,6 @@ public interface AuthorService {
     Completable updateAuthorV2(UpdateAuthorRequest updateAuthorRequest);
 
     Completable deleteAuthorV2(String id);
+
+    Flux<AuthorResponse> getAllAuthorsFlux();
 }
